@@ -1,19 +1,15 @@
 pipeline {
     agent any
-
     environment {
-        IMAGE_NAME = "YOUR_DOCKERHUB_USER/nodejs-app"
+        IMAGE_NAME = "kiran20041975/nodejs-app"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
-
     stages {
-
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/YOUR_USER/nodejs-app.git'
+                git 'https://github.com/kiran20041975-crypto/newproj'
             }
         }
-
         stage('Install & Test') {
             steps {
                 sh '''
@@ -22,13 +18,11 @@ pipeline {
                 '''
             }
         }
-
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
             }
         }
-
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
@@ -45,23 +39,19 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     sh '''
                     export KUBECONFIG=$KUBECONFIG
-
                     kubectl set image deployment/nodejs-app \
-                    nodejs-app=${IMAGE_NAME}:${IMAGE_TAG} --record
-
+                    nodejs-app=${IMAGE_NAME}:${IMAGE_TAG}
                     kubectl rollout status deployment/nodejs-app
                     '''
                 }
             }
         }
     }
-
     post {
         success {
             echo 'Pipeline succeeded! App deployed.'
