@@ -4,12 +4,11 @@ pipeline {
         IMAGE_NAME = "kiran20041975/nodejs-app"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/kiran20041975-crypto/newproj'
-            }
-        }
+    stage('Checkout') {
+    steps {
+        git branch: 'main', url: 'https://github.com/kiran20041975-crypto/newproj'
+    }
+}
         stage('Install & Test') {
             steps {
                 sh '''
