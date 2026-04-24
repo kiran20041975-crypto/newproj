@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = "kiran20041975/nodejs-app"
+        IMAGE_NAME = "kiran1975/nodejs-app"   // ← changed from kiran20041975
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
     stages {
