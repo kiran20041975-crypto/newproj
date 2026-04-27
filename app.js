@@ -1,24 +1,30 @@
 const express = require('express');
 const client = require('prom-client');
-
 const app = express();
 
-// Create registry
-const register = new client.Registry();
+// EJS setup
+app.set('view engine', 'ejs');
+app.set('views', './views');
 
-// Collect default metrics
+// Prometheus setup
+const register = new client.Registry();
 client.collectDefaultMetrics({ register });
 
-// Custom metric (optional but good)
 const httpRequests = new client.Counter({
   name: 'http_requests_total',
   help: 'Total number of requests',
 });
 
+let requestCount = 0;
+
 // Routes
 app.get('/', (req, res) => {
   httpRequests.inc();
-  res.json({ message: 'Hello DevOps!', version: '1.0' });
+  requestCount++;
+  res.render('index', {
+    version: '1.0',
+    requests: requestCount
+  });
 });
 
 app.get('/health', (req, res) => {
@@ -30,7 +36,6 @@ app.get('/metrics', async (req, res) => {
   res.end(await register.metrics());
 });
 
-// Start server
 app.listen(3000, () => {
   console.log('App running on port 3000');
 });
